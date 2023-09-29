@@ -1,0 +1,1 @@
+<% tp.user.add_outcome(tp,app) %>
