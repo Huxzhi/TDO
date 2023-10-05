@@ -2,23 +2,22 @@ async function add_outcome(tp, app) {
   const Task_PATH = tp.user.TDO_config().Task_PATH;
   const Outcome_PATH = tp.user.TDO_config().Outcome_PATH;
 
-  current_MapPath = tp.file.folder(true);
-
-  const re = new RegExp("^" + Task_PATH);
+  const current_MapPath = tp.file.folder(true);
 
   if (!current_MapPath.search(re) == 0) return "Not Task/Project";
-  // 找到task 对应的 outcome 内的文件夹，支持 task 包含 subTask
-  let folder_path = current_MapPath.replace(re, Outcome_PATH);
+  // 找到 task 对应的 outcome 内的文件夹，支持 task 包含 subTask
+  const re = new RegExp("^" + Task_PATH);
+  const refolder_path = current_MapPath.replace(re, Outcome_PATH);
 
-  if (await app.vault.adapter.exists("/" + folder_path)) {
+  if (await app.vault.adapter.exists("/" + refolder_path)) {
   } else {
-    await app.vault.adapter.mkdir("/" + folder_path);
+    await app.vault.adapter.mkdir("/" + refolder_path);
     await app.vault.adapter.update;
   }
 
-  folder_path = await tp.user
+  const folder_path = await tp.user
     .TDO_until()
-    .chooseProject(folder_path, folder_path, tp, app);
+    .chooseProject(refolder_path, refolder_path, tp, app);
   if (folder_path == null) return "";
 
   let name = await tp.system.prompt("请输入 outcome name: ");

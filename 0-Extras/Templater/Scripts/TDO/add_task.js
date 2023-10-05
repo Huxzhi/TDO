@@ -16,7 +16,8 @@
  */
 
 async function addTaskByProject(path, tp, app) {
-  if (path == null) {
+  console.log(path);
+  if (path === null) {
     return "path is null";
   }
   const sg = app.vault.fileMap[path];
@@ -47,28 +48,37 @@ async function addTaskByProject(path, tp, app) {
 async function add_task(tp, app) {
   const Task_PATH = tp.user.TDO_config().Task_PATH;
   const Outcome_PATH = tp.user.TDO_config().Outcome_PATH;
-
-  let path = await tp.user
+  const folder_path = await tp.user
     .TDO_until()
     .chooseProject(Task_PATH, Task_PATH + "/", tp, app);
 
-  if (
-    app.vault.fileMap.hasOwnProperty(path) &&
-    "children" in app.vault.fileMap[path]
-  ) {
-    const re = new RegExp("^" + Task_PATH);
+  if (folder_path.substr(-1) === "/") {
+    //创建新task
 
-    // 找到task 对应的 outcome 内的文件夹，支持 task 包含 subTask
-    const folder_path = path.replace(re, Outcome_PATH);
+    const name = await tp.system.prompt("请输入Project name");
 
-    if (await app.vault.adapter.exists("/" + folder_path)) {
+    if (await app.vault.adapter.exists("/" + folder_path + name)) {
+      console.log("task existed");
     } else {
-      await app.vault.adapter.mkdir("/" + folder_path);
+      await app.vault.adapter.mkdir("/" + folder_path + name);
+      //多层级创建文件夹会不渲染（ob的文件目录不显示），需要更新ob的文件目录
       await app.vault.adapter.update;
     }
-  }
 
-  await addTaskByProject(path, tp, app);
+    // 找到task 对应的 outcome 内的文件夹，支持 task 包含 subTask
+    const re = new RegExp("^" + Task_PATH);
+    const refolder_path = folder_path.replace(re, Outcome_PATH);
+
+    if (await app.vault.adapter.exists("/" + refolder_path + name)) {
+      console.log("outcome existed");
+    } else {
+      await app.vault.adapter.mkdir("/" + refolder_path + name);
+      await app.vault.adapter.update;
+    }
+    await addTaskByProject(folder_path + name, tp, app);
+  } else if (folder_path !== null) {
+    await addTaskByProject(folder_path, tp, app);
+  }
 
   return "";
 }
