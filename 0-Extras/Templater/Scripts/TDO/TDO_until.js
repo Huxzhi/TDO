@@ -37,7 +37,7 @@ function TDO_until() {
           placeholder
         );
         if (subpath === null) {
-          if (sg.parent === null) {
+          if (sg.parent.parent == null) {
             console.log("Cancel suggester");
             return null;
           }

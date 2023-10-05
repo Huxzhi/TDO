@@ -51,14 +51,15 @@ async function add_task(tp, app) {
   const folder_path = await tp.user
     .TDO_until()
     .chooseProject(Task_PATH, Task_PATH + "/", tp, app);
-
+  if (folder_path === null) return "";
   if (folder_path.substr(-1) === "/") {
     //创建新task
 
     const name = await tp.system.prompt("请输入Project name");
+    if (name === null) return "";
 
     if (await app.vault.adapter.exists("/" + folder_path + name)) {
-      console.log("task existed");
+      console.log("task existed: " + folder_path + name);
     } else {
       await app.vault.adapter.mkdir("/" + folder_path + name);
       //多层级创建文件夹会不渲染（ob的文件目录不显示），需要更新ob的文件目录
@@ -70,13 +71,13 @@ async function add_task(tp, app) {
     const refolder_path = folder_path.replace(re, Outcome_PATH);
 
     if (await app.vault.adapter.exists("/" + refolder_path + name)) {
-      console.log("outcome existed");
+      console.log("outcome existed: " + refolder_path + name);
     } else {
       await app.vault.adapter.mkdir("/" + refolder_path + name);
       await app.vault.adapter.update;
     }
     await addTaskByProject(folder_path + name, tp, app);
-  } else if (folder_path !== null) {
+  } else {
     await addTaskByProject(folder_path, tp, app);
   }
 
