@@ -1,3 +1,15 @@
+## 今日完成的工作
+
+```dataview 
+TASK 
+FROM "3-Tasks"
+WHERE (contains(tags, "#MT1") or contains(tags, "#MT2") orcontains(tags, "#MT3") orcontains(tags, "#MT4") ) AND file.day = date(today)
+
+GROUP BY file.frontmatter.Project
+SORT rows.file.date DESC
+```
+
+
 ## 包含未完成工作的任务列表
 
 ```dataview
