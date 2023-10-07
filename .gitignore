@@ -1,0 +1,40 @@
+# General
+.DS_Store
+Desktop.ini
+
+# Thumbnail cache files
+._*
+Thumbs.db
+
+
+# git忽略文件的写法太蠢了，多层级要一个一个写
+/*
+!/0-Extras/
+/0-Extras/*
+
+!/0-Extras/Dashboard/
+
+!/0-Extras/Images
+/0-Extras/Images/*
+!/0-Extras/Images/TDO/
+
+!/0-Extras/Templater/
+/0-Extras/Templater/*
+!/0-Extras/Templater/IOTO/
+
+!/0-Extras/Templater/Scripts
+/0-Extras/Templater/Scripts/*
+!/0-Extras/Templater/Scripts/TDO/
+
+!/3-Tasks/
+/3-Tasks/*
+!/3-Tasks/TDO开发/
+
+!/4-Outcomes/
+/4-Outcomes/*
+!/4-Outcomes/TDO开发/
+
+/.obsidian/
+
+!README.md
+!.gitignore

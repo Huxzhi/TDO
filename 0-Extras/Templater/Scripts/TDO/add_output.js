@@ -3,7 +3,7 @@ async function add_output(tp, app) {
 
   const folder_path = await tp.user
     .TDO_until()
-    .chooseProject(Output_PATH, Output_PATH + "/", tp, app);
+    .chooseProject(Output_PATH, tp, app);
   if (folder_path == null) return "";
 
   const name = await tp.system.prompt("请输入 Output name: ");
