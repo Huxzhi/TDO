@@ -1,5 +1,5 @@
 ---
-Project: <%  tp.config.active_file.parent.name%>
+Project: <%  tp.file.title.split("-")[0]%>
 ---
 
 

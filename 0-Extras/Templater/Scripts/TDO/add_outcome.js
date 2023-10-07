@@ -4,9 +4,10 @@ async function add_outcome(tp, app) {
 
   const current_MapPath = tp.file.folder(true);
 
+  const re = new RegExp("^" + Task_PATH);
   if (!current_MapPath.search(re) == 0) return "Not Task/Project";
   // 找到 task 对应的 outcome 内的文件夹，支持 task 包含 subTask
-  const re = new RegExp("^" + Task_PATH);
+
   const refolder_path = current_MapPath.replace(re, Outcome_PATH);
 
   if (await app.vault.adapter.exists("/" + refolder_path)) {
@@ -15,18 +16,22 @@ async function add_outcome(tp, app) {
     await app.vault.adapter.update;
   }
 
-  const folder_path = await tp.user
+  let folder_path = await tp.user
     .TDO_until()
-    .chooseProject(refolder_path, refolder_path, tp, app);
+    .chooseProject(refolder_path, tp, app);
   if (folder_path == null) return "";
 
   let name = await tp.system.prompt("请输入 outcome name: ");
   if (name == null) return "";
 
-  let create_file_name = folder_path + "/" + name;
+  let create_file_name;
+  if (folder_path.substr(-1) === "/") {
+    folder_path = folder_path.slice(0, -1);
+  }
+  create_file_name = folder_path + "/" + name;
 
   if (await tp.file.exists(create_file_name + ".md")) {
-    console.log("existed", create_file_name);
+    console.log("existed ", create_file_name);
     app.workspace.activeLeaf.openFile(
       await tp.file.find_tfile(create_file_name)
     );

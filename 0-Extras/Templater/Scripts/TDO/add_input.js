@@ -3,7 +3,11 @@ async function add_input(tp, app) {
 
   const folder_path = await tp.user
     .TDO_until()
-    .chooseProject(Input_PATH, "创建文件在" + Input_PATH + "/", tp, app);
+    .chooseProject(
+      { path: Input_PATH, placeholder: "创建文件在" + Input_PATH + "/" },
+      tp,
+      app
+    );
   if (folder_path == null) return "";
 
   const name = await tp.system.prompt("请输入 Input name: ");

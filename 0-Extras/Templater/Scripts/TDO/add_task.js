@@ -16,11 +16,12 @@
  */
 
 async function addTaskByProject(path, tp, app) {
-  console.log(path);
+  console.log("addTaskByProject: " + path);
   if (path === null) {
     return "path is null";
   }
   const sg = app.vault.fileMap[path];
+
   let create_file_name =
     sg.path + "/" + sg.name + "-" + tp.date.now("YYYY-MM-DD");
 
@@ -33,6 +34,7 @@ async function addTaskByProject(path, tp, app) {
       false,
       await app.vault.getAbstractFileByPath(sg.path)
     );
+    console.log("created", create_file_name);
   }
   app.workspace.activeLeaf.openFile(await tp.file.find_tfile(create_file_name));
   // return sg
@@ -48,20 +50,36 @@ async function addTaskByProject(path, tp, app) {
 async function add_task(tp, app) {
   const Task_PATH = tp.user.TDO_config().Task_PATH;
   const Outcome_PATH = tp.user.TDO_config().Outcome_PATH;
+
   const folder_path = await tp.user
     .TDO_until()
-    .chooseProject(Task_PATH, Task_PATH + "/", tp, app);
+    .chooseProject(
+      { path: Task_PATH, placeholder: Task_PATH + "/", enableBack: false },
+      tp,
+      app
+    );
   if (folder_path === null) return "";
+
   if (folder_path.substr(-1) === "/") {
     //创建新task
 
-    const name = await tp.system.prompt("请输入Project name");
+    let name = await tp.system.prompt("请输入Project name");
     if (name === null) return "";
+
+    console.log(folder_path.split("/"));
+
+    //TODO folder_path.split(),子task 会在名字末尾加上 上一级的task名
+    if (folder_path.split("/").length > 1) {
+      // slice(-2,-1) ,因为最后 有一个 ""
+      name = name + "-" + folder_path.split("/").slice(-2, -1);
+      console.log(name);
+    }
 
     if (await app.vault.adapter.exists("/" + folder_path + name)) {
       console.log("task existed: " + folder_path + name);
     } else {
       await app.vault.adapter.mkdir("/" + folder_path + name);
+      console.log("task created: " + folder_path + name);
       //多层级创建文件夹会不渲染（ob的文件目录不显示），需要更新ob的文件目录
       await app.vault.adapter.update;
     }
@@ -74,6 +92,7 @@ async function add_task(tp, app) {
       console.log("outcome existed: " + refolder_path + name);
     } else {
       await app.vault.adapter.mkdir("/" + refolder_path + name);
+      console.log("outcome created: " + refolder_path + name);
       await app.vault.adapter.update;
     }
     await addTaskByProject(folder_path + name, tp, app);
